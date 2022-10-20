@@ -1,0 +1,8 @@
+go 1.19
+
+use (
+	./cmd/timer
+	./timer
+)
+
+replace github.com/andybrewer/mack => github.com/cwinters8/mack v0.0.0-20221020192354-ce7541f04b38

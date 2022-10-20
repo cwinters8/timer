@@ -1,2 +1,3 @@
-# timer
-CLI timer tool written in Go
+# tools
+
+a collection of useful tools, primarily written in Go

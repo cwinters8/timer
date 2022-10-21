@@ -11,7 +11,7 @@ import (
 	"github.com/drgrib/ttimer/parse"
 )
 
-//go:embed assets/clock_red.icns
+//go:embed assets
 var assets embed.FS
 
 func Start(duration time.Duration, title string) error {
@@ -34,21 +34,24 @@ func notify(title string) error {
 	if len(title) < 1 {
 		title = "timer"
 	}
-	// TODO: probably do this in cmd/timer.main() and pass the file name as a param
-	// TODO: save clock_red.icns to tmp directory
+	// TODO: probably should do these file ops in cmd/timer.main() and pass the file name as a param,
+	// because the icns file should not need to be recreated on each notification
 	iconFile := "clock_red.icns"
 	iconFilePath := fmt.Sprintf("assets/%s", iconFile)
 	iconContents, err := assets.ReadFile(iconFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to read %s: %w", iconFilePath, err)
 	}
-	if err := os.WriteFile(iconFile, iconContents, 0644); err != nil {
+	if err := os.MkdirAll("./tmp", 0755); err != nil {
+		return fmt.Errorf("failed to create tmp dir: %w", err)
+	}
+	if err := os.WriteFile(fmt.Sprintf("./tmp/%s", iconFile), iconContents, 0644); err != nil {
 		return fmt.Errorf("failed to write %s: %w", iconFile, err)
 	}
 	if _, err := mack.DialogBox(mack.DialogOptions{
 		Title: title,
 		Text:  "time's up!",
-		Icon:  fmt.Sprintf("./%s", iconFile),
+		Icon:  fmt.Sprintf("./tmp/%s", iconFile),
 	}); err != nil {
 		return fmt.Errorf("failed to display dialog: %w", err)
 	}
